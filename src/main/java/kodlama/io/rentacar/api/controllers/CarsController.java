@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/cars")
-public class CarController {
+public class CarsController {
     private final CarService carService;
 
    @GetMapping

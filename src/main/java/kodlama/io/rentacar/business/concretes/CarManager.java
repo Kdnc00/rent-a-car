@@ -8,8 +8,10 @@ import kodlama.io.rentacar.business.dto.responses.get.GetAllCarsResponse;
 import kodlama.io.rentacar.business.dto.responses.get.GetCarResponse;
 import kodlama.io.rentacar.business.dto.responses.update.UpdateCarResponse;
 import kodlama.io.rentacar.entities.Car;
+import kodlama.io.rentacar.entities.enums.State;
 import kodlama.io.rentacar.repository.CarRepository;
 import lombok.AllArgsConstructor;
+
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,7 @@ public class CarManager implements CarService {
 
    @Override
    public GetCarResponse getById(int id){
+        checkIfCarExists(id);
         Car car=carRepository.findById(id).orElseThrow();
         GetCarResponse response=mapper.map(car,GetCarResponse.class);
         return response;
@@ -50,6 +53,7 @@ public class CarManager implements CarService {
 
     @Override
     public UpdateCarResponse update(int id, UpdateCarRequest request){
+        checkIfCarExists(id);
         Car car=mapper.map(request,Car.class);
         car.setId(id);
         carRepository.save(car);
@@ -61,7 +65,29 @@ public class CarManager implements CarService {
 
     @Override
     public void  delete (int id ){
+        checkIfCarExists(id);
         carRepository.deleteById(id);
+    }
+
+    @Override
+    public void changeState(int carId, State state) {
+        Car car = carRepository.findById(carId).orElseThrow();
+        car.setState(state);
+        carRepository.save(car);
+    }
+
+    private void checkIfCarExists(int id) {
+        if (!carRepository.existsById(id)) {
+            throw new RuntimeException("Böyle bir araç bulunamadı!");
+        }
+    }
+
+    private List<Car> filterCarsByMaintenanceState(boolean includeMaintenance) {
+        if (includeMaintenance) {
+            return carRepository.findAll();
+        }
+
+        return carRepository.findAllByStateIsNot(State.MAINTENANCE);
     }
 
 }

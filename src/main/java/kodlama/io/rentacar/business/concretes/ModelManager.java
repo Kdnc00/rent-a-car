@@ -31,6 +31,8 @@ public class ModelManager implements ModelService {
 
     @Override
     public GetModelResponse getById(int id) {
+        checkIfModelExists(id);
+
         Model model=modelRepository.findById(id).orElseThrow();
         GetModelResponse responses=mapper.map(model,GetModelResponse.class);
         return responses;
@@ -47,6 +49,9 @@ public class ModelManager implements ModelService {
 
 
     public UpdateModelResponse update (int id , UpdateModelRequest updateModelRequest){
+        checkIfModelExists(id);
+
+
         Model model =mapper.map(updateModelRequest,Model.class);
         model.setId(id);
         modelRepository.save(model);
@@ -56,8 +61,12 @@ public class ModelManager implements ModelService {
 
     @Override
     public void delete(int id){
+        checkIfModelExists(id);
         modelRepository.deleteById(id);
     }
-
-
+    private void checkIfModelExists(int id) {
+        if(!modelRepository.existsById(id)) {
+            throw new RuntimeException("Böyle bir model bulunamadı!");
+        }
+    }
 }
