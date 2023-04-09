@@ -19,3 +19,4 @@ public class UpdateRentalRequest {
     private LocalDateTime startDate;
 
 }
+

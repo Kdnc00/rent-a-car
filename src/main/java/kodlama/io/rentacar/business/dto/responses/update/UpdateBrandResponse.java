@@ -14,3 +14,4 @@ public class UpdateBrandResponse {
     private int id;
     private String name;
 }
+
